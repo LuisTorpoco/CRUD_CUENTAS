@@ -1,0 +1,23 @@
+package com.bbva.mcwn.dto.holder;
+
+public class HolderOutDTO {
+	private String name;
+	private String lastName;
+	private Long age;
+	private String curp;
+	private String rfc;
+	private AccountOutDTO account;
+
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
+	public String getLastName() { return lastName; }
+	public void setLastName(String lastName) { this.lastName = lastName; }
+	public Long getAge() { return age; }
+	public void setAge(Long age) { this.age = age; }
+	public String getCurp() { return curp; }
+	public void setCurp(String curp) { this.curp = curp; }
+	public String getRfc() { return rfc; }
+	public void setRfc(String rfc) { this.rfc = rfc; }
+	public AccountOutDTO getAccount() { return account; }
+	public void setAccount(AccountOutDTO account) { this.account = account; }
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.bbva.mcwn</groupId>
+		<artifactId>LIBRARIES-CRUD_CUENTAS</artifactId>
+		<version>0.0.0</version>
+	</parent>
+	<groupId>com.bbva.mcwn</groupId>
+	<artifactId>MCWNR101</artifactId>
+	<name>MCWNR101</name>
+	<version>0.0.0</version>
+	<packaging>bundle</packaging>
+	<description>Libreria de acceso a datos para cuentas</description>
+	<properties>
+		<osgi.version.manifest>0.0</osgi.version.manifest>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>com.bbva.mcwn.dto.holder</groupId>
+			<artifactId>MCWNC100</artifactId>
+			<version>0.0.0</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}-${project.version}</Bundle-SymbolicName>
+						<Bundle-Category>library</Bundle-Category>
+						<Import-Package>
+							*;version="${osgi.version.manifest}"
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

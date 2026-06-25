@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<transaction xmlns="http://www.w3schools.com" transactionName="MCWNT100" application="MCWN" version="01" country="MX" language="ES">
+	<paramsIn>
+		<dto order="1" name="holder" mandatory="1" package="com.bbva.mcwn.dto.holder.HolderInDTO" artifactId="MCWNC100">
+			<parameter order="1" name="name" mandatory="1" type="String" size="100"/>
+			<parameter order="2" name="lastName" mandatory="1" type="String" size="100"/>
+			<parameter order="3" name="age" mandatory="0" type="Long" size="3"/>
+			<parameter order="4" name="rfc" mandatory="1" type="String" size="13"/>
+			<parameter order="5" name="curp" mandatory="1" type="String" size="18"/>
+			<dto order="6" name="account" mandatory="1" package="com.bbva.mcwn.dto.holder.AccountInDTO" artifactId="MCWNC100">
+				<parameter order="1" name="accountNumber" mandatory="1" type="Long" size="10"/>
+				<parameter order="2" name="accountNip" mandatory="1" type="Long" size="4"/>
+			</dto>
+		</dto>
+	</paramsIn>
+	<paramsOut>
+		<dto order="1" name="holder" mandatory="1" package="com.bbva.mcwn.dto.holder.HolderOutDTO" artifactId="MCWNC100">
+			<parameter order="1" name="message" mandatory="0" type="String" size="150"/>
+			<parameter order="2" name="name" mandatory="0" type="String" size="100"/>
+			<parameter order="3" name="lastName" mandatory="0" type="String" size="100"/>
+			<parameter order="4" name="age" mandatory="0" type="Long" size="3"/>
+			<parameter order="5" name="curp" mandatory="0" type="String" size="18"/>
+			<parameter order="6" name="isAdult" mandatory="0" type="Boolean" size="0"/>
+			<parameter order="7" name="rfc" mandatory="0" type="String" size="13"/>
+			<dto order="8" name="account" mandatory="0" package="com.bbva.mcwn.dto.holder.AccountOutDTO" artifactId="MCWNC100">
+				<parameter order="1" name="accountNumber" mandatory="0" type="Long" size="10"/>
+				<parameter order="2" name="accountNip" mandatory="0" type="Long" size="4"/>
+			</dto>
+		</dto>
+	</paramsOut>
+	<description>Transaccion para saludo MCWN</description>
+</transaction>

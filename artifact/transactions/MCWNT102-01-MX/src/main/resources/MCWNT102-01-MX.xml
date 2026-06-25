@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<transaction xmlns="http://www.w3schools.com" transactionName="MCWNT102" application="MCWN" version="01" country="MX" language="ES">
+	<paramsIn/>
+	<paramsOut>
+		<list order="1" name="holders" mandatory="0">
+			<dto order="1" name="Type" mandatory="0" package="com.bbva.mcwn.dto.holder.HolderOutDTO" artifactId="MCWNC100">
+				<parameter order="1" name="name" mandatory="0" type="String" size="50"/>
+				<parameter order="2" name="lastName" mandatory="0" type="String" size="50"/>
+				<parameter order="3" name="age" mandatory="0" type="Long" size="3"/>
+				<parameter order="4" name="curp" mandatory="0" type="String" size="18"/>
+				<parameter order="5" name="rfc" mandatory="0" type="String" size="13"/>
+				<dto order="6" name="account" mandatory="0" package="com.bbva.mcwn.dto.holder.AccountOutDTO" artifactId="MCWNC100">
+					<parameter order="1" name="accountNumber" mandatory="0" type="Long" size="10"/>
+					<parameter order="2" name="accountNip" mandatory="0" type="Long" size="4"/>
+					<parameter order="3" name="balance" mandatory="0" type="Double" size="11"/>
+					<parameter order="4" name="accountCard" mandatory="0" type="Long" size="16"/>
+					<parameter order="5" name="accountStatus" mandatory="0" type="Boolean" size="0"/>
+				</dto>
+			</dto>
+		</list>
+	</paramsOut>
+	<description>Transaccion para listar las cuentas</description>
+</transaction>
