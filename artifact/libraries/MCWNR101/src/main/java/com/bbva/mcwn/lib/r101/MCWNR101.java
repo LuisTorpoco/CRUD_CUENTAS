@@ -7,4 +7,14 @@ public interface MCWNR101 {
 
 	List<HolderDTO> executeGetAccounts();
 
+	HolderDTO executeGetAccountByNumber(Long accountNumber);
+
+	HolderDTO executeGetAccountByCard(Long cardNumber);
+
+	int executeInsertAccount(HolderDTO holder);
+
+	int executeUpdateAccount(HolderDTO holder);
+
+	int executeUpdateAccountStatus(Long accountNumber, Integer status);
+
 }

@@ -1,9 +1,12 @@
 package com.bbva.mcwn;
 
-import com.bbva.elara.domain.transaction.Advice;
 import com.bbva.elara.domain.transaction.RequestHeaderParamsName;
 import com.bbva.elara.domain.transaction.Severity;
-import com.bbva.mcwn.dto.holder.*;
+import com.bbva.mcwn.dto.holder.AccountDTO;
+import com.bbva.mcwn.dto.holder.AccountOutDTO;
+import com.bbva.mcwn.dto.holder.HolderDTO;
+import com.bbva.mcwn.dto.holder.HolderInDTO;
+import com.bbva.mcwn.dto.holder.HolderOutDTO;
 import com.bbva.mcwn.lib.r100.MCWNR100;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,67 +17,109 @@ public class MCWNT10001MXTransaction extends AbstractMCWNT10001MXTransaction {
 
 	@Override
 	public void execute() {
-		HolderInDTO in = this.getHolder();
+		LOGGER.info("[MCWNT10001MX] - Inicio de transacción");
 
 		String clientDocument = (String) this.getRequestHeader().getHeaderParameter(RequestHeaderParamsName.CLIENTDOCUMENT);
-		String aap = (String) this.getRequestHeader().getHeaderParameter(RequestHeaderParamsName.AAP);
+		LOGGER.info("[MCWNT10001MX] - client-document: {}", clientDocument);
 
-		LOGGER.info("Headers recuperados -> client-document: '{}', AAP: '{}'", clientDocument, aap);
+		// Validar clientType
+		if (clientDocument == null || (!clientDocument.equals("0") && !clientDocument.equals("1"))) {
+			LOGGER.error("[MCWNT10001MX] - clientType inválido: {}", clientDocument);
+			this.addAdvice("MCWN01415030");
+			this.setSeverity(Severity.ENR);
+			return;
+		}
+
+		int clientType = Integer.parseInt(clientDocument);
+		HolderInDTO in = this.getHolder();
+
+		// Validar campos obligatorios según tipo
+		if (clientType == 0) {
+			if (in == null || in.getName() == null || in.getLastName() == null
+					|| in.getAge() == null || in.getCurp() == null || in.getRfc() == null
+					|| in.getAccount() == null || in.getAccount().getAccountNumber() == null) {
+				this.addAdvice("MCWN01415034");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+			if (in.getCurp().length() != 18) {
+				this.addAdvice("MCWN01415031");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+			if (in.getRfc().length() != 13) {
+				this.addAdvice("MCWN01415032");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+		} else {
+			if (in == null || in.getRfc() == null
+					|| in.getAccount() == null || in.getAccount().getAccountNumber() == null) {
+				this.addAdvice("MCWN01415034");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+			if (in.getRfc().length() != 12) {
+				this.addAdvice("MCWN01415033");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+		}
+
+		// Validar balance máximo
+		String maxBalanceStr = this.getProperty("MAX.BALANCE");
+		if (maxBalanceStr != null && in.getAccount().getBalance() != null) {
+			double maxBalance = Double.parseDouble(maxBalanceStr);
+			if (in.getAccount().getBalance() > maxBalance) {
+				this.addAdvice("MCWN01415048");
+				this.setSeverity(Severity.ENR);
+				return;
+			}
+		}
+
+		// Mapear a HolderDTO
+		HolderDTO holder = new HolderDTO();
+		holder.setName(in.getName());
+		holder.setLastName(in.getLastName());
+		holder.setAge(in.getAge());
+		holder.setCurp(in.getCurp());
+		holder.setRfc(in.getRfc());
+		holder.setClientType(clientType);
+
+		AccountDTO account = new AccountDTO();
+		account.setAccountNumber(in.getAccount().getAccountNumber());
+		account.setBalance(in.getAccount().getBalance() != null ? in.getAccount().getBalance() : 0.0);
+		account.setAccountCard(in.getAccount().getAccountCard());
+		holder.setAccount(account);
 
 		MCWNR100 mcwnR100 = this.getServiceLibrary(MCWNR100.class);
-		HolderDTO holderResponse = mcwnR100.executeGetMessage(mapHolder(in), clientDocument, aap);
+		HolderDTO created = mcwnR100.executeCreateAccount(holder);
 
-		Advice advice = this.getAdvice();
-		if (advice != null) {
+		if (created == null) {
 			this.setSeverity(Severity.ENR);
-		} else {
-			this.setHolder(mapHolderOut(holderResponse));
+			return;
 		}
 
-		LOGGER.info("Fin ejecución transacción");
-	}
-
-	private HolderDTO mapHolder(HolderInDTO in) {
-		HolderDTO domainIn = new HolderDTO();
-		if (in != null) {
-			domainIn.setName(in.getName());
-			domainIn.setLastName(in.getLastName());
-			if (in.getAge() != null) {
-				domainIn.setAge(in.getAge());
-			}
-			domainIn.setRfc(in.getRfc());
-			domainIn.setCurp(in.getCurp());
-
-			if (in.getAccount() != null) {
-				AccountDTO accDom = new AccountDTO();
-				if (in.getAccount().getAccountNumber() != null) {
-					accDom.setAccountNumber(in.getAccount().getAccountNumber());
-				}
-				if (in.getAccount().getAccountNip() != null) {
-					accDom.setAccountNip(in.getAccount().getAccountNip());
-				}
-				domainIn.setAccount(accDom);
-			}
+		AccountOutDTO accountOut = new AccountOutDTO();
+		if (created.getAccount() != null) {
+			accountOut.setAccountNumber(created.getAccount().getAccountNumber());
+			accountOut.setAccountNip(created.getAccount().getAccountNip());
+			accountOut.setBalance(created.getAccount().getBalance());
+			accountOut.setAccountCard(created.getAccount().getAccountCard());
+			accountOut.setAccountStatus(created.getAccount().getStatus());
 		}
-		return domainIn;
-	}
 
-	private HolderOutDTO mapHolderOut(HolderDTO domainOut) {
-		HolderOutDTO out = new HolderOutDTO();
-		if (domainOut != null) {
-			out.setName(domainOut.getName());
-			out.setLastName(domainOut.getLastName());
-			out.setAge(domainOut.getAge());
-			out.setRfc(domainOut.getRfc());
-			out.setCurp(domainOut.getCurp());
+		HolderOutDTO holderOut = new HolderOutDTO();
+		holderOut.setName(created.getName());
+		holderOut.setLastName(created.getLastName());
+		holderOut.setAge(created.getAge());
+		holderOut.setCurp(created.getCurp());
+		holderOut.setRfc(created.getRfc());
+		holderOut.setHolderType(clientType == 0 ? "FISICO" : "MORAL");
+		holderOut.setAccount(accountOut);
 
-			if (domainOut.getAccount() != null) {
-				AccountOutDTO accOut = new AccountOutDTO();
-				accOut.setAccountNumber(domainOut.getAccount().getAccountNumber());
-				accOut.setAccountNip(domainOut.getAccount().getAccountNip());
-				out.setAccount(accOut);
-			}
-		}
-		return out;
+		this.setHolder(holderOut);
+
+		LOGGER.info("[MCWNT10001MX] - Transacción finalizada correctamente");
 	}
 }

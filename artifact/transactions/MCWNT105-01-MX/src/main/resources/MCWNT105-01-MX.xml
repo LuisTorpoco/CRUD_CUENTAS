@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<transaction xmlns="http://www.w3schools.com" transactionName="MCWNT105" application="MCWN" version="01" country="MX" language="ES">
+	<paramsIn>
+		<dto order="1" name="account" mandatory="1" package="com.bbva.mcwn.dto.holder.AccountInDTO" artifactId="MCWNC100">
+			<parameter order="1" name="accountNumber" mandatory="1" type="Long" size="10"/>
+		</dto>
+	</paramsIn>
+	<paramsOut/>
+	<description>Transaccion para reactivacion de una cuenta</description>
+</transaction>

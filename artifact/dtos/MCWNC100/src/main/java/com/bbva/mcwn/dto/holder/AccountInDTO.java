@@ -4,10 +4,18 @@ public class AccountInDTO {
 
 	private Long accountNumber;
 	private Long accountNip;
+	private Double balance;
+	private Long accountCard;
 
 	public Long getAccountNumber() { return accountNumber; }
 	public void setAccountNumber(Long accountNumber) { this.accountNumber = accountNumber; }
 
 	public Long getAccountNip() { return accountNip; }
 	public void setAccountNip(Long accountNip) { this.accountNip = accountNip; }
+
+	public Double getBalance() { return balance; }
+	public void setBalance(Double balance) { this.balance = balance; }
+
+	public Long getAccountCard() { return accountCard; }
+	public void setAccountCard(Long accountCard) { this.accountCard = accountCard; }
 }

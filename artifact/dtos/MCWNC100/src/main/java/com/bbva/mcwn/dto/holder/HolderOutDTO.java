@@ -6,6 +6,7 @@ public class HolderOutDTO {
 	private Long age;
 	private String curp;
 	private String rfc;
+	private String holderType;
 	private AccountOutDTO account;
 
 	public String getName() { return name; }
@@ -18,6 +19,8 @@ public class HolderOutDTO {
 	public void setCurp(String curp) { this.curp = curp; }
 	public String getRfc() { return rfc; }
 	public void setRfc(String rfc) { this.rfc = rfc; }
+	public String getHolderType() { return holderType; }
+	public void setHolderType(String holderType) { this.holderType = holderType; }
 	public AccountOutDTO getAccount() { return account; }
 	public void setAccount(AccountOutDTO account) { this.account = account; }
 }

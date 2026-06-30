@@ -1,6 +1,5 @@
 package com.bbva.mcwn;
 
-import com.bbva.mcwn.lib.r100.MCWNR100;
 import com.bbva.mcwn.dto.holder.AccountOutDTO;
 import com.bbva.mcwn.dto.holder.HolderDTO;
 import com.bbva.mcwn.dto.holder.HolderOutDTO;
@@ -17,12 +16,9 @@ public class MCWNT10201MXTransaction extends AbstractMCWNT10201MXTransaction {
 
 	@Override
 	public void execute() {
-		MCWNR100 mcwnR100 = this.getServiceLibrary(MCWNR100.class);
-
 		LOGGER.info("[MCWNT10201MX] - Inicio de transacción");
 
-		mcwnR100 = this.getServiceLibrary(MCWNR100.class);
-		LOGGER.info("[MCWNT10201MX] - mcwnR100 es: {}", mcwnR100);
+		MCWNR100 mcwnR100 = this.getServiceLibrary(MCWNR100.class);
 
 		List<HolderDTO> holderList = mcwnR100.executeGetAllAccounts();
 
@@ -45,6 +41,7 @@ public class MCWNT10201MXTransaction extends AbstractMCWNT10201MXTransaction {
 			holderOut.setCurp(holderDTO.getCurp());
 			holderOut.setRfc(holderDTO.getRfc());
 			holderOut.setAccount(accountOut);
+			holderOut.setHolderType(holderDTO.getClientType() != null && holderDTO.getClientType() == 0 ? "FISICO" : "MORAL");
 
 			holdersOut.add(holderOut);
 		}

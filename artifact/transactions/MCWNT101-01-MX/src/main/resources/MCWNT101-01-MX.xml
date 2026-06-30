@@ -20,6 +20,7 @@
 				<parameter order="4" name="accountCard" mandatory="0" type="Long" size="16"/>
 				<parameter order="5" name="accountStatus" mandatory="0" type="Boolean" size="0"/>
 			</dto>
+			<parameter order="7" name="holderType" mandatory="0" type="String" size="50"/>
 		</dto>
 	</paramsOut>
 	<description>Transaccion para consulta de cuenta por numero Y NIP </description>

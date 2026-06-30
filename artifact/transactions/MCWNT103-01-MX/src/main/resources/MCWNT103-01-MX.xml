@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<transaction xmlns="http://www.w3schools.com" transactionName="MCWNT100" application="MCWN" version="01" country="MX" language="ES">
+<transaction xmlns="http://www.w3schools.com" transactionName="MCWNT103" application="MCWN" version="01" country="MX" language="ES">
 	<paramsIn>
 		<dto order="1" name="holder" mandatory="0" package="com.bbva.mcwn.dto.holder.HolderInDTO" artifactId="MCWNC100">
-			<parameter order="1" name="name" mandatory="0" type="String" size="100"/>
-			<parameter order="2" name="lastName" mandatory="0" type="String" size="100"/>
-			<parameter order="3" name="age" mandatory="0" type="Long" size="3"/>
-			<parameter order="4" name="curp" mandatory="0" type="String" size="18"/>
-			<parameter order="5" name="rfc" mandatory="0" type="String" size="13"/>
+			<parameter order="1" name="rfc" mandatory="0" type="String" size="13"/>
+			<parameter order="2" name="name" mandatory="0" type="String" size="100"/>
+			<parameter order="3" name="lastName" mandatory="0" type="String" size="100"/>
+			<parameter order="4" name="age" mandatory="0" type="Long" size="3"/>
+			<parameter order="5" name="curp" mandatory="0" type="String" size="18"/>
 			<dto order="6" name="account" mandatory="0" package="com.bbva.mcwn.dto.holder.AccountInDTO" artifactId="MCWNC100">
 				<parameter order="1" name="accountNumber" mandatory="1" type="Long" size="10"/>
 				<parameter order="2" name="balance" mandatory="0" type="Double" size="11"/>
 				<parameter order="3" name="accountCard" mandatory="0" type="Long" size="16"/>
+				<parameter order="4" name="accountNip" mandatory="0" type="Long" size="4"/>
 			</dto>
 		</dto>
 	</paramsIn>
@@ -31,5 +32,5 @@
 			</dto>
 		</dto>
 	</paramsOut>
-	<description>Transaccion para saludo MCWN</description>
+	<description>Transaccion para actualizar los datos de una cuenta y su titular</description>
 </transaction>

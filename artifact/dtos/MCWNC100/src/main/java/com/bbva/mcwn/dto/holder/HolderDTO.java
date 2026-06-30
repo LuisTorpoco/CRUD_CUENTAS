@@ -7,6 +7,7 @@ public class HolderDTO {
 	private String curp;
 	private String rfc;
 	private Boolean isAdult;
+	private Integer clientType;
 	private AccountDTO account;
 
 	public Long getAge() { return age; }
@@ -21,6 +22,8 @@ public class HolderDTO {
 	public void setRfc(String rfc) { this.rfc = rfc; }
 	public Boolean getIsAdult() { return isAdult; }
 	public void setIsAdult(Boolean isAdult) { this.isAdult = isAdult; }
+	public Integer getClientType() { return clientType; }
+	public void setClientType(Integer clientType) { this.clientType = clientType; }
 	public AccountDTO getAccount() { return account; }
 	public void setAccount(AccountDTO account) { this.account = account; }
 }

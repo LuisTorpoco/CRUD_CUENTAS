@@ -1,6 +1,5 @@
 package com.bbva.mcwn;
 
-import com.bbva.mcwn.lib.r100.MCWNR100;
 import com.bbva.elara.domain.transaction.Severity;
 import com.bbva.mcwn.dto.holder.AccountDTO;
 import com.bbva.mcwn.dto.holder.AccountInDTO;
@@ -17,15 +16,13 @@ public class MCWNT10101MXTransaction extends AbstractMCWNT10101MXTransaction {
 
 	@Override
 	public void execute() {
-		MCWNR100 mcwnR100 = this.getServiceLibrary(MCWNR100.class);
-
 		LOGGER.info("[MCWNT10101MX] - Inicio de transacción");
 
 		AccountInDTO accountIn = this.getAccount();
 
-		if (accountIn == null) {
-			LOGGER.error("[MCWNT10101MX] - El parámetro account es nulo");
-			this.addAdvice("MCWN01415036");
+		if (accountIn == null || accountIn.getAccountNumber() == null || accountIn.getAccountNip() == null) {
+			LOGGER.error("[MCWNT10101MX] - Parámetros obligatorios faltantes");
+			this.addAdvice("MCWN01415034");
 			this.setSeverity(Severity.ENR);
 			return;
 		}
@@ -36,9 +33,7 @@ public class MCWNT10101MXTransaction extends AbstractMCWNT10101MXTransaction {
 
 		LOGGER.info("[MCWNT10101MX] - Consultando cuenta: {}", accountIn.getAccountNumber());
 
-		mcwnR100 = this.getServiceLibrary(MCWNR100.class);
-		LOGGER.info("[MCWNT10101MX] - mcwnR100 es: {}", mcwnR100);
-
+		MCWNR100 mcwnR100 = this.getServiceLibrary(MCWNR100.class);
 		HolderDTO holderDTO = mcwnR100.executeGetAccount(accountDTO);
 
 		if (holderDTO == null) {
@@ -63,6 +58,7 @@ public class MCWNT10101MXTransaction extends AbstractMCWNT10101MXTransaction {
 		holderOut.setCurp(holderDTO.getCurp());
 		holderOut.setRfc(holderDTO.getRfc());
 		holderOut.setAccount(accountOut);
+		holderOut.setHolderType(holderDTO.getClientType() != null && holderDTO.getClientType() == 0 ? "FISICO" : "MORAL");
 
 		this.setHolder(holderOut);
 

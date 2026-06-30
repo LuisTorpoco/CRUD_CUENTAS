@@ -16,5 +16,8 @@
 		<module>MCWNT100-01-MX</module>
 		<module>MCWNT101-01-MX</module>
 		<module>MCWNT102-01-MX</module>
+		<module>MCWNT103-01-MX</module>
+		<module>MCWNT104-01-MX</module>
+		<module>MCWNT105-01-MX</module>
 	</modules>
 </project>
