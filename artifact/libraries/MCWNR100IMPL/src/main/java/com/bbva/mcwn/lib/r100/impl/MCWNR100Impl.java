@@ -11,14 +11,18 @@ import java.util.Random;
 public class MCWNR100Impl extends MCWNR100Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MCWNR100Impl.class);
+	//para evitar duplicados, se utiliza en los metodos
 	private static final String ADVICE_ACCOUNT_NOT_FOUND = "MCWN01415035";
 	private static final Random RANDOM = new Random();
 
+	// Pendiente de implementación - retorna null de moment
 	@Override
 	public HolderDTO executeGetMessage(HolderDTO holderDTOIn, String clientDocument, String aap) {
 		return null;
 	}
 
+	/* Busca una cuenta por numero,valida que esté activa
+	y que el NIP sea correcto*/
 	@Override
 	public HolderDTO executeGetAccount(AccountDTO accountDTO) {
 		LOGGER.info("[MCWNR100] - executeGetAccount - cuenta: {}", accountDTO.getAccountNumber());
@@ -47,6 +51,7 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 		return found;
 	}
 
+	//Retorna la lista completa de cuentas delegando en R101
 	@Override
 	public List<HolderDTO> executeGetAllAccounts() {
 		LOGGER.info("[MCWNR100] - executeGetAllAccounts - Obteniendo lista completa de cuentas");
@@ -142,7 +147,8 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 		if (holder.getCurp() == null) { holder.setCurp(existing.getCurp()); }
 		if (holder.getRfc() == null) { holder.setRfc(existing.getRfc()); }
 	}
-
+	
+	//Desactiva una cuenta (borrado lógico) actualizando su status a 0
 	@Override
 	public int executeDeleteAccount(Long accountNumber) {
 		LOGGER.info("[MCWNR100] - executeDeleteAccount - cuenta: {}", accountNumber);
