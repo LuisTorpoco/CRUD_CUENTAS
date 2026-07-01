@@ -6,10 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Random;
 
 public class MCWNR100Impl extends MCWNR100Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MCWNR100Impl.class);
+	private static final String ADVICE_ACCOUNT_NOT_FOUND = "MCWN01415035";
+	private static final Random RANDOM = new Random();
 
 	@Override
 	public HolderDTO executeGetMessage(HolderDTO holderDTOIn, String clientDocument, String aap) {
@@ -24,7 +27,7 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 
 		if (found == null) {
 			LOGGER.warn("[MCWNR100] - Cuenta no encontrada: {}", accountDTO.getAccountNumber());
-			this.addAdvice("MCWN01415035");
+			this.addAdvice(ADVICE_ACCOUNT_NOT_FOUND);
 			return null;
 		}
 
@@ -50,6 +53,8 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 		return this.mcwnR101.executeGetAccounts();
 	}
 
+	//createAccount y updateAccount ahora validan que si el
+	// usuario manda un accountCard, este no exista en otra cuenta activa
 	@Override
 	public HolderDTO executeCreateAccount(HolderDTO holder) {
 		LOGGER.info("[MCWNR100] - executeCreateAccount - cuenta: {}", holder.getAccount().getAccountNumber());
@@ -76,7 +81,8 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 			}
 		}
 
-		Long nip = 1000L + (long)(Math.random() * 9000);
+		// Si el NIP no se proporciona, generamos uno aleatorio de 4 dígitos
+		Long nip = 1000L + (RANDOM.nextLong() % 9000);
 		holder.getAccount().setAccountNip(nip);
 
 		int rows = this.mcwnR101.executeInsertAccount(holder);
@@ -94,7 +100,7 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 
 		HolderDTO existing = this.mcwnR101.executeGetAccountByNumber(holder.getAccount().getAccountNumber());
 		if (existing == null) {
-			this.addAdvice("MCWN01415035");
+			this.addAdvice(ADVICE_ACCOUNT_NOT_FOUND);
 			return null;
 		}
 
@@ -103,33 +109,8 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 			return null;
 		}
 
-		// Si no se envía accountCard, usar el existente
-		if (holder.getAccount().getAccountCard() == null) {
-			holder.getAccount().setAccountCard(existing.getAccount().getAccountCard());
-		} else if (!holder.getAccount().getAccountCard().equals(existing.getAccount().getAccountCard())) {
-			HolderDTO existingByCard = this.mcwnR101.executeGetAccountByCard(holder.getAccount().getAccountCard());
-			if (existingByCard != null && !existingByCard.getAccount().getAccountNumber().equals(holder.getAccount().getAccountNumber())) {
-				this.addAdvice("MCWN01415039");
-				return null;
-			}
-		}
-
-		// Si no se envía accountNip, usar el existente
-		if (holder.getAccount().getAccountNip() == null) {
-			holder.getAccount().setAccountNip(existing.getAccount().getAccountNip());
-		}
-
-		// Si no se envía balance, usar el existente
-		if (holder.getAccount().getBalance() == null) {
-			holder.getAccount().setBalance(existing.getAccount().getBalance());
-		}
-
-		// Si no se envían campos del holder, usar los existentes
-		if (holder.getName() == null) { holder.setName(existing.getName()); }
-		if (holder.getLastName() == null) { holder.setLastName(existing.getLastName()); }
-		if (holder.getAge() == null) { holder.setAge(existing.getAge()); }
-		if (holder.getCurp() == null) { holder.setCurp(existing.getCurp()); }
-		if (holder.getRfc() == null) { holder.setRfc(existing.getRfc()); }
+		resolveAccountCard(holder, existing);
+		resolveRemainingFields(holder, existing);
 
 		int rows = this.mcwnR101.executeUpdateAccount(holder);
 		if (rows == 0) {
@@ -140,13 +121,35 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 		return this.mcwnR101.executeGetAccountByNumber(holder.getAccount().getAccountNumber());
 	}
 
+	private void resolveAccountCard(HolderDTO holder, HolderDTO existing) {
+		if (holder.getAccount().getAccountCard() == null) {
+			holder.getAccount().setAccountCard(existing.getAccount().getAccountCard());
+		} else if (!holder.getAccount().getAccountCard().equals(existing.getAccount().getAccountCard())) {
+			HolderDTO existingByCard = this.mcwnR101.executeGetAccountByCard(holder.getAccount().getAccountCard());
+			if (existingByCard != null && !existingByCard.getAccount().getAccountNumber().equals(holder.getAccount().getAccountNumber())) {
+				this.addAdvice("MCWN01415039");
+			}
+		}
+	}
+	//resolve remaining hace que si el usuario no manda algun campo,
+	//se mantenga el valor que ya tenia en la base de datos
+	private void resolveRemainingFields(HolderDTO holder, HolderDTO existing) {
+		if (holder.getAccount().getAccountNip() == null) { holder.getAccount().setAccountNip(existing.getAccount().getAccountNip()); }
+		if (holder.getAccount().getBalance() == null) { holder.getAccount().setBalance(existing.getAccount().getBalance()); }
+		if (holder.getName() == null) { holder.setName(existing.getName()); }
+		if (holder.getLastName() == null) { holder.setLastName(existing.getLastName()); }
+		if (holder.getAge() == null) { holder.setAge(existing.getAge()); }
+		if (holder.getCurp() == null) { holder.setCurp(existing.getCurp()); }
+		if (holder.getRfc() == null) { holder.setRfc(existing.getRfc()); }
+	}
+
 	@Override
 	public int executeDeleteAccount(Long accountNumber) {
 		LOGGER.info("[MCWNR100] - executeDeleteAccount - cuenta: {}", accountNumber);
 
 		HolderDTO existing = this.mcwnR101.executeGetAccountByNumber(accountNumber);
 		if (existing == null) {
-			this.addAdvice("MCWN01415035");
+			this.addAdvice(ADVICE_ACCOUNT_NOT_FOUND);
 			return 0;
 		}
 
@@ -159,6 +162,7 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 		if (rows == 0) {
 			this.addAdvice("MCWN01415041");
 		}
+		//rows es el numero de filas afectadas, si es 0 significa que no se pudo actualizar el estatus de la cuenta
 		return rows;
 	}
 
@@ -168,7 +172,7 @@ public class MCWNR100Impl extends MCWNR100Abstract {
 
 		HolderDTO existing = this.mcwnR101.executeGetAccountByNumber(accountNumber);
 		if (existing == null) {
-			this.addAdvice("MCWN01415035");
+			this.addAdvice(ADVICE_ACCOUNT_NOT_FOUND);
 			return 0;
 		}
 

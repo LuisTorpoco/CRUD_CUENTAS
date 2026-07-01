@@ -16,6 +16,9 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MCWNR101Impl.class);
 
+	private static final String PARAM_ACCOUNT_NUMBER = "accountNumber";
+	private static final String PARAM_CARD_NUMBER = "cardNumber";
+
 	@Override
 	public List<HolderDTO> executeGetAccounts() {
 		LOGGER.info("Ejecucion executeGetAccounts");
@@ -39,7 +42,7 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 	public HolderDTO executeGetAccountByNumber(Long accountNumber) {
 		LOGGER.info("Ejecucion executeGetAccountByNumber: {}", accountNumber);
 		Map<String, Object> args = new HashMap<>();
-		args.put("accountNumber", accountNumber);
+		args.put(PARAM_ACCOUNT_NUMBER, accountNumber);
 		try {
 			List<Map<String, Object>> result = jdbcUtils.queryForList("select.account.by.number", args);
 			if (result != null && !result.isEmpty()) {
@@ -55,7 +58,7 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 	public HolderDTO executeGetAccountByCard(Long cardNumber) {
 		LOGGER.info("Ejecucion executeGetAccountByCard: {}", cardNumber);
 		Map<String, Object> args = new HashMap<>();
-		args.put("cardNumber", cardNumber);
+		args.put(PARAM_CARD_NUMBER, cardNumber);
 		try {
 			List<Map<String, Object>> result = jdbcUtils.queryForList("select.account.by.card", args);
 			if (result != null && !result.isEmpty()) {
@@ -71,8 +74,8 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 	public int executeInsertAccount(HolderDTO holder) {
 		LOGGER.info("Ejecucion executeInsertAccount: {}", holder.getAccount().getAccountNumber());
 		Map<String, Object> args = new HashMap<>();
-		args.put("accountNumber", holder.getAccount().getAccountNumber());
-		args.put("cardNumber", holder.getAccount().getAccountCard());
+		args.put(PARAM_ACCOUNT_NUMBER, holder.getAccount().getAccountNumber());
+		args.put(PARAM_CARD_NUMBER, holder.getAccount().getAccountCard());
 		args.put("balance", holder.getAccount().getBalance());
 		args.put("nip", holder.getAccount().getAccountNip());
 		args.put("firstName", holder.getName());
@@ -88,8 +91,8 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 	public int executeUpdateAccount(HolderDTO holder) {
 		LOGGER.info("Ejecucion executeUpdateAccount: {}", holder.getAccount().getAccountNumber());
 		Map<String, Object> args = new HashMap<>();
-		args.put("accountNumber", holder.getAccount().getAccountNumber());
-		args.put("cardNumber", holder.getAccount().getAccountCard());
+		args.put(PARAM_ACCOUNT_NUMBER, holder.getAccount().getAccountNumber());
+		args.put(PARAM_CARD_NUMBER, holder.getAccount().getAccountCard());
 		args.put("balance", holder.getAccount().getBalance());
 		args.put("nip", holder.getAccount().getAccountNip());
 		args.put("firstName", holder.getName());
@@ -104,7 +107,7 @@ public class MCWNR101Impl extends MCWNR101Abstract {
 	public int executeUpdateAccountStatus(Long accountNumber, Integer status) {
 		LOGGER.info("Ejecucion executeUpdateAccountStatus: {} status: {}", accountNumber, status);
 		Map<String, Object> args = new HashMap<>();
-		args.put("accountNumber", accountNumber);
+		args.put(PARAM_ACCOUNT_NUMBER, accountNumber);
 		args.put("status", status);
 		return jdbcUtils.update("update.account.status", args);
 	}
